@@ -1,13 +1,15 @@
 "use strict";
 class Point {
     constructor(x, y) {
-        this.x = x;
-        this.y = y;
         this.radius = 8;
         this.color = '#3b82f6';
+        this.velocityY = 0;
+        this.x = x;
+        this.y = y;
     }
     updatePositionwWithGravity(gravity, canvas) {
-        this.y += gravity;
+        this.velocityY += gravity;
+        this.y += this.velocityY;
         this.constrainBounds(canvas);
     }
     constrainBounds(canvas) {

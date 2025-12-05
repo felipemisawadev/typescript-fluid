@@ -3,6 +3,7 @@ class FluidSim {
     private ctx: CanvasRenderingContext2D;
     private animationFrameId: number | null;
     private referencePoint: Point | null = null;
+    private gravity: number = 1;
 
     constructor() {
         this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -20,6 +21,14 @@ class FluidSim {
     private setupEventListeners(): void {
         this.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
         window.addEventListener('resize', () => this.handleResize());
+
+        const updateBtn = document.getElementById('updateGravityBtn') as HTMLButtonElement;
+        if (updateBtn) {
+            updateBtn.addEventListener('click', () => {
+                const gravityInput = document.getElementById('gravity') as HTMLInputElement;
+                this.gravity = parseInt(gravityInput.value);
+            });
+        }
     }
 
     private handleCanvasClick(event: MouseEvent): void {
@@ -79,7 +88,7 @@ class FluidSim {
 
     private animate = (): void => {
         if (this.referencePoint) {
-            this.referencePoint.updatePositionwWithGravity(5, this.canvas);
+            this.referencePoint.updatePositionwWithGravity(this.gravity, this.canvas);
         }
         this.draw();
         this.animationFrameId = requestAnimationFrame(this.animate);

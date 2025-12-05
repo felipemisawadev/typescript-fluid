@@ -2,9 +2,10 @@
 class FluidSim {
     constructor() {
         this.referencePoint = null;
+        this.gravity = 1;
         this.animate = () => {
             if (this.referencePoint) {
-                this.referencePoint.updatePositionwWithGravity(5, this.canvas);
+                this.referencePoint.updatePositionwWithGravity(this.gravity, this.canvas);
             }
             this.draw();
             this.animationFrameId = requestAnimationFrame(this.animate);
@@ -21,6 +22,13 @@ class FluidSim {
     setupEventListeners() {
         this.canvas.addEventListener('click', (e) => this.handleCanvasClick(e));
         window.addEventListener('resize', () => this.handleResize());
+        const updateBtn = document.getElementById('updateGravityBtn');
+        if (updateBtn) {
+            updateBtn.addEventListener('click', () => {
+                const gravityInput = document.getElementById('gravity');
+                this.gravity = parseInt(gravityInput.value);
+            });
+        }
     }
     handleCanvasClick(event) {
         const rect = this.canvas.getBoundingClientRect();

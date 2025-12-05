@@ -1,18 +1,18 @@
 class Point {
     x: number;
     y: number;
-    radius: number;
-    color: string;
+    radius: number = 8;
+    color: string = '#3b82f6';
+    velocityY: number = 0;
 
     constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
-        this.radius = 8;
-        this.color = '#3b82f6';
     }
 
     updatePositionwWithGravity(gravity: number, canvas: HTMLCanvasElement): void {
-        this.y += gravity;
+        this.velocityY += gravity;
+        this.y += this.velocityY;
         this.constrainBounds(canvas);
     }
 
