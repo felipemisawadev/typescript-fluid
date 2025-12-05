@@ -2,6 +2,7 @@ class FluidSim {
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
     private animationFrameId: number | null;
+    private referencePoint: Point | null = null;
 
     constructor() {
         this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
@@ -25,6 +26,9 @@ class FluidSim {
         const rect = this.canvas.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
+
+        this.referencePoint = new Point(x, y);
+
     }
 
     private handleResize(): void {
@@ -48,6 +52,9 @@ class FluidSim {
         // Draw grid (optional, for visual appeal)
         this.drawGrid();
 
+        if (this.referencePoint) {
+            this.drawPoint(this.referencePoint);
+        }
     }
 
     private drawGrid(): void {
@@ -71,6 +78,9 @@ class FluidSim {
     }
 
     private animate = (): void => {
+        if (this.referencePoint) {
+            this.referencePoint.updatePositionwWithGravity(5, this.canvas);
+        }
         this.draw();
         this.animationFrameId = requestAnimationFrame(this.animate);
     };
@@ -84,6 +94,19 @@ class FluidSim {
             cancelAnimationFrame(this.animationFrameId);
         }
     }
+
+    private drawPoint(point: Point): void {
+        this.ctx.fillStyle = point.color;
+        this.ctx.beginPath();
+        this.ctx.arc(point.x, point.y, point.radius, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // Add shadow/outline
+        this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+        this.ctx.lineWidth = 2;
+        this.ctx.stroke();
+    }
+
 }
 
 // Initialize when DOM is ready
