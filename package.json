@@ -1,0 +1,21 @@
+{
+  "name": "fluid-sim",
+  "version": "1.0.0",
+  "description": "A TypeScript fluid simulation visualization",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "serve": "http-server dist",
+    "watch": "tsc --watch",
+    "dev": "concurrently \"npm run watch\" \"npm run serve\""
+  },
+  "keywords": ["visualization", "typescript", "canvas"],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0",
+    "http-server": "^14.1.0",
+    "concurrently": "^8.2.0"
+  }
+}
