@@ -89,6 +89,7 @@ class FluidSim {
     private animate = (): void => {
         if (this.referencePoint) {
             this.referencePoint.updatePositionwWithGravity(this.gravity, this.canvas);
+            this.updatevelocityDisplay(this.referencePoint);
         }
         this.draw();
         this.animationFrameId = requestAnimationFrame(this.animate);
@@ -114,6 +115,13 @@ class FluidSim {
         this.ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
         this.ctx.lineWidth = 2;
         this.ctx.stroke();
+    }
+
+    private updatevelocityDisplay(point: Point): void {
+        const velocityInfo = document.getElementById('velocity');
+        if (velocityInfo) {
+            velocityInfo.textContent = `${point.velocityY} pixels/frame`;
+        }
     }
 
 }
