@@ -2,7 +2,7 @@ class FluidSim {
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
     private animationFrameId: number | null;
-    private referencePoint: Point | null = null;
+    private points: Point[] = [];
     private gravity: number = 1;
 
     constructor() {
@@ -36,7 +36,7 @@ class FluidSim {
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
 
-        this.referencePoint = new Point(x, y);
+        this.points.push(new Point(x, y));
 
     }
 
@@ -61,8 +61,8 @@ class FluidSim {
         // Draw grid (optional, for visual appeal)
         this.drawGrid();
 
-        if (this.referencePoint) {
-            this.drawPoint(this.referencePoint);
+        if (this.points.length > 0) {
+            this.points.forEach(point => this.drawPoint(point));
         }
     }
 
@@ -87,9 +87,10 @@ class FluidSim {
     }
 
     private animate = (): void => {
-        if (this.referencePoint) {
-            this.referencePoint.updatePositionwWithGravity(this.gravity, this.canvas);
-            this.updatevelocityDisplay(this.referencePoint);
+        if (this.points.length > 0) {
+            this.handlePointCollisions();
+            this.points.forEach(point => point.updatePositionwWithGravity(this.gravity, this.canvas));
+            this.updatevelocityDisplay(this.points);
         }
         this.draw();
         this.animationFrameId = requestAnimationFrame(this.animate);
@@ -117,10 +118,18 @@ class FluidSim {
         this.ctx.stroke();
     }
 
-    private updatevelocityDisplay(point: Point): void {
+    private updatevelocityDisplay(points: Point[]): void {
         const velocityInfo = document.getElementById('velocity');
-        if (velocityInfo) {
-            velocityInfo.textContent = `${point.velocityY} pixels/frame`;
+        if (velocityInfo && points.length > 0) {
+            velocityInfo.textContent = `${points.reduce((total, next) => total + next.velocity.magnitude(), 0) / points.length} pixels/frame`;
+        }
+    }
+
+    private handlePointCollisions(): void {
+        for (let i = 0; i < this.points.length; i++) {
+            for (let j = i + 1; j < this.points.length; j++) {
+                this.points[i].handleCollision(this.points[j]);
+            }
         }
     }
 

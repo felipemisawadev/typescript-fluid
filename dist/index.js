@@ -1,12 +1,13 @@
 "use strict";
 class FluidSim {
     constructor() {
-        this.referencePoint = null;
+        this.points = [];
         this.gravity = 1;
         this.animate = () => {
-            if (this.referencePoint) {
-                this.referencePoint.updatePositionwWithGravity(this.gravity, this.canvas);
-                this.updatevelocityDisplay(this.referencePoint);
+            if (this.points.length > 0) {
+                this.handlePointCollisions();
+                this.points.forEach(point => point.updatePositionwWithGravity(this.gravity, this.canvas));
+                this.updatevelocityDisplay(this.points);
             }
             this.draw();
             this.animationFrameId = requestAnimationFrame(this.animate);
@@ -35,7 +36,7 @@ class FluidSim {
         const rect = this.canvas.getBoundingClientRect();
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
-        this.referencePoint = new Point(x, y);
+        this.points.push(new Point(x, y));
     }
     handleResize() {
         // Redraw on resize if needed
@@ -54,8 +55,8 @@ class FluidSim {
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         // Draw grid (optional, for visual appeal)
         this.drawGrid();
-        if (this.referencePoint) {
-            this.drawPoint(this.referencePoint);
+        if (this.points.length > 0) {
+            this.points.forEach(point => this.drawPoint(point));
         }
     }
     drawGrid() {
@@ -93,10 +94,17 @@ class FluidSim {
         this.ctx.lineWidth = 2;
         this.ctx.stroke();
     }
-    updatevelocityDisplay(point) {
+    updatevelocityDisplay(points) {
         const velocityInfo = document.getElementById('velocity');
-        if (velocityInfo) {
-            velocityInfo.textContent = `${point.velocityY} pixels/frame`;
+        if (velocityInfo && points.length > 0) {
+            velocityInfo.textContent = `${points.reduce((total, next) => total + next.velocity.magnitude(), 0) / points.length} pixels/frame`;
+        }
+    }
+    handlePointCollisions() {
+        for (let i = 0; i < this.points.length; i++) {
+            for (let j = i + 1; j < this.points.length; j++) {
+                this.points[i].handleCollision(this.points[j]);
+            }
         }
     }
 }
